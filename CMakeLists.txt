@@ -3,4 +3,7 @@ project(Brutus)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Brutus main.cpp)
+add_executable(Brutus
+        main.cpp
+        md5.cpp
+)
