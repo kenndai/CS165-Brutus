@@ -15,7 +15,15 @@ const string hashedPassword = "CxWQeLPwIdqToYNk5yDoS.";
 const string alphabet[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
 
 int main() {
-    cout << "crack() goes here" << endl;
+//    cout << "crack() goes here" << endl;
+    string zeroSum = "0123456789ABCDEF";
+    char replacement[] = {
+            zeroSum[11], zeroSum[4], zeroSum[10], zeroSum[5],
+            zeroSum[3], zeroSum[9], zeroSum[15], zeroSum[2],
+            zeroSum[8], zeroSum[14], zeroSum[1],zeroSum[7],
+            zeroSum[13], zeroSum[0], zeroSum[6], zeroSum[12], '\0'
+    };
+    cout << replacement << endl;
     return 0;
 }
 
@@ -37,7 +45,15 @@ string MD5_Crypt(string password) {
         if (i % 2 != 0) intermediate += zeroSum;
         zeroSum = md5(intermediate);
     }
-    //TODO Replacement
+
+    // Pick out the 16 bytes in this order: 11 4 10 5 3 9 15 2 8 14 1 7 13 0 6 12.
+    char replacement[] = {
+            zeroSum[11], zeroSum[4], zeroSum[10], zeroSum[5],
+            zeroSum[3], zeroSum[9], zeroSum[15], zeroSum[2],
+            zeroSum[8], zeroSum[14], zeroSum[1],zeroSum[7],
+            zeroSum[13], zeroSum[0], zeroSum[6], zeroSum[12], '\0'
+    };
+
     return "hi";
 }
 
