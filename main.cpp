@@ -17,13 +17,6 @@ const string alphabet[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
 int main() {
 //    cout << "crack() goes here" << endl;
     string zeroSum = "0123456789ABCDEF";
-    char replacement[] = {
-            zeroSum[11], zeroSum[4], zeroSum[10], zeroSum[5],
-            zeroSum[3], zeroSum[9], zeroSum[15], zeroSum[2],
-            zeroSum[8], zeroSum[14], zeroSum[1],zeroSum[7],
-            zeroSum[13], zeroSum[0], zeroSum[6], zeroSum[12], '\0'
-    };
-    cout << replacement << endl;
     return 0;
 }
 
@@ -54,7 +47,13 @@ string MD5_Crypt(string password) {
             zeroSum[13], zeroSum[0], zeroSum[6], zeroSum[12], '\0'
     };
 
-    return "hi";
+    // TODO Final/Bit Manip
+    const string crypt64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    string final;
+    // 1. Grab each 6 bit group starting from the LSB
+    // 2. Convert binary into a decimal number and covert to corresponding crypt64 character
+
+    return final;
 }
 
 string crack() {
