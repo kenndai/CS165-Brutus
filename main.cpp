@@ -17,12 +17,14 @@ const string hashedPassword = "CxWQeLPwIdqToYNk5yDoS.";
 const string alphabet[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
 
 int main() {
-    unsigned char* digest;
-    MD5 grapes = MD5("0000");
-
-    cout << "digest from class: " << grapes.digest << endl;
-    digest = getDigest(md5("0000"));
-    cout << "digest from function: " << digest << endl;
+//    unsigned char* digest;
+//    MD5 grapes = MD5("0000");
+//
+//    cout << "digest from class: " << grapes.digest << endl;
+//    digest = getDigest(md5("0000"));
+//    cout << "digest from function: " << digest << endl;
+    string password = "aaaaaa";
+    MD5_Crypt(password);
 
     return 0;
 }
@@ -49,21 +51,20 @@ unsigned char* getDigest(const string &hexdigest) {
 
 string sixBytes(const string &password) {
     string passSaltPass = password + salt + password;
-
-    unsigned char* digest = getDigest(md5(passSaltPass));
+    MD5 md5psp = MD5(passSaltPass);
+    unsigned char* altSum = getDigest(md5(passSaltPass));
 
     string sixBytes;
     // push back 6 hex values
     // possibly losing data through implicit conversion to chars
     for (int i = 0; i < 6; i++)
-        sixBytes.push_back(digest[i]);
+        sixBytes.push_back(altSum[i]);
 
     return sixBytes;
 }
 
 string MD5_Crypt(string password) {
-    string concat = password + magic + salt + sixBytes(password) + password[0] + "\0" + "\0";
-
+    string concat = password + magic + salt + sixBytes(password) + password[0] + '\0' + '\0';
     string inter;
     unsigned char* digest = getDigest(md5(concat));
     // move the  16 hex values into inter
@@ -80,30 +81,30 @@ string MD5_Crypt(string password) {
         if (i % 2 != 0) nextInter += inter; // if odd
 
         // rehash and push new values into inter
+        inter = "";
         digest = getDigest(md5(nextInter));
         for (int j = 0; j < 16; j++) {
             inter.push_back(digest[j]);
         }
     }
 
-    char replacement[] = {
-            inter[11], inter[4], inter[10], inter[5],
-            inter[3], inter[9], inter[15], inter[2],
-            inter[8], inter[14], inter[1],inter[7],
-            inter[13], inter[0], inter[6], inter[12], '\0'
+    // shuffle around final hex values
+    unsigned char replacement[] = {
+            digest[11], digest[4], digest[10], digest[5], digest[3], digest[9], digest[15], digest[2],
+            digest[8], digest[14], digest[1],digest[7], digest[13], digest[0], digest[6], digest[12], '\0'
     };
 
     // TODO Final/Bit Manip
     const string crypt64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     string final;
-    // md5() gives output in hex
+
+
+    // 1. Grab each 6 bit group starting from the LSB
+    // 2. Convert binary into a decimal number and covert to corresponding crypt64 character
 
 //    for (int j = 31; j >= 0; j++) {
 //
 //    }
-
-    // 1. Grab each 6 bit group starting from the LSB
-    // 2. Convert binary into a decimal number and covert to corresponding crypt64 character
 
     return final;
 }
