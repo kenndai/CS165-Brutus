@@ -6,8 +6,8 @@
 
 using namespace std;
 
-unsigned char* getDigest(const string &); //takes in string from hexdigest and produces digest
-string altSixBytes(string);
+unsigned char* getDigest(const string &); //takes in string from hexdigest and produces digest, 16 hex values
+string sixBytes(const string &);
 string MD5_Crypt(string);
 string crack();
 
@@ -18,15 +18,10 @@ const string alphabet[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
 
 int main() {
     unsigned char* digest;
+    MD5 grapes = MD5("0000");
 
-    MD5 grapes = MD5("grapes");
     cout << "digest from class: " << grapes.digest << endl;
-    digest = getDigest(grapes.hexdigest());
-    cout << "digest from function: " << digest << endl;
-
-    MD5 oranges = MD5("oranges");
-    cout << "digest from class: " << oranges.digest << endl;
-    digest = getDigest(oranges.hexdigest());
+    digest = getDigest(md5("0000"));
     cout << "digest from function: " << digest << endl;
 
     return 0;
@@ -52,43 +47,50 @@ unsigned char* getDigest(const string &hexdigest) {
     return hexes;
 }
 
-
-string altSixBytes(string password) {
+string sixBytes(const string &password) {
     string passSaltPass = password + salt + password;
 
-    //digest is the hash represented with 16 hex values, each one byte
+    unsigned char* digest = getDigest(md5(passSaltPass));
+
     string sixBytes;
+    // push back 6 hex values
+    // possibly losing data through implicit conversion to chars
     for (int i = 0; i < 6; i++)
-        sixBytes.push_back(MD5(passSaltPass).digest[i]); //possibly losing data through implicit conversion to char
+        sixBytes.push_back(digest[i]);
+
     return sixBytes;
 }
 
 string MD5_Crypt(string password) {
-    string concat = password + magic + salt + altSixBytes(password) + password[0] + "\0" + "\0";
+    string concat = password + magic + salt + sixBytes(password) + password[0] + "\0" + "\0";
 
-    string zeroSum;
-    for (unsigned char i : MD5(concat).digest) {
-        zeroSum.push_back(i);
-    }
+    string inter;
+    unsigned char* digest = getDigest(md5(concat));
+    // move the  16 hex values into inter
+    for (int i = 0; i < 16; i++)
+        inter.push_back(digest[i]);
+
     for (int i = 0; i < 1000; i++) {
-        string nextSum;
-        if (i % 2 == 0) nextSum += zeroSum;
-        if (i % 2 != 0) nextSum += password;
-        if (i % 3 != 0) nextSum += salt;
-        if (i % 7 != 0) nextSum += password;
-        if (i % 2 == 0) nextSum += password;
-        if (i % 2 != 0) nextSum += zeroSum;
+        string nextInter;
+        if (i % 2 == 0) nextInter += inter; // if even
+        if (i % 2 != 0) nextInter += password; // if odd
+        if (i % 3 != 0) nextInter += salt; // if indivisible by 3
+        if (i % 7 != 0) nextInter += password; // if indivisible by 7
+        if (i % 2 == 0) nextInter += password; // if even
+        if (i % 2 != 0) nextInter += inter; // if odd
 
-        for (unsigned char j : MD5(nextSum).digest) {
-            zeroSum.push_back(j);
+        // rehash and push new values into inter
+        digest = getDigest(md5(nextInter));
+        for (int j = 0; j < 16; j++) {
+            inter.push_back(digest[j]);
         }
     }
 
     char replacement[] = {
-            zeroSum[11], zeroSum[4], zeroSum[10], zeroSum[5],
-            zeroSum[3], zeroSum[9], zeroSum[15], zeroSum[2],
-            zeroSum[8], zeroSum[14], zeroSum[1],zeroSum[7],
-            zeroSum[13], zeroSum[0], zeroSum[6], zeroSum[12], '\0'
+            inter[11], inter[4], inter[10], inter[5],
+            inter[3], inter[9], inter[15], inter[2],
+            inter[8], inter[14], inter[1],inter[7],
+            inter[13], inter[0], inter[6], inter[12], '\0'
     };
 
     // TODO Final/Bit Manip
