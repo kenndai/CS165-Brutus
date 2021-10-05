@@ -8,23 +8,25 @@ using namespace std;
 
 unsigned char* getDigest(const string &); //takes in string from hexdigest and produces digest, 16 hex values
 string sixBytes(const string &);
-string MD5_Crypt(string);
+string convert(unsigned long, const int &);
+string triplets(unsigned char*);
+string MD5_Crypt(const string &);
 string crack();
 
-const string salt = "4fTgjp6q";
+const string salt = "hfT7jp2q";
 const string magic = "$1$";
-const string hashedPassword = "CxWQeLPwIdqToYNk5yDoS.";
+const string hashedPassword = "rhb3sPONC2VlUS2CG4JFe0";
 const string alphabet[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+const string crypt64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 int main() {
-//    unsigned char* digest;
-//    MD5 grapes = MD5("0000");
+//    string password = "czormg";
+//    string resultHash = MD5_Crypt(password);
 //
-//    cout << "digest from class: " << grapes.digest << endl;
-//    digest = getDigest(md5("0000"));
-//    cout << "digest from function: " << digest << endl;
-    string password = "aaaaaa";
-    MD5_Crypt(password);
+//    if (resultHash == hashedPassword)
+//        cout << "CONGRATULATIONS!!!" << endl;
+
+    crack()
 
     return 0;
 }
@@ -63,7 +65,45 @@ string sixBytes(const string &password) {
     return sixBytes;
 }
 
-string MD5_Crypt(string password) {
+string convert(unsigned long triplet, const int &iterations) {
+    string partial;
+    for (int i = 0; i < iterations; i++) {
+        partial += crypt64[triplet & 0x3F];
+        triplet >>= 6;
+    }
+    return partial;
+}
+
+string triplets(unsigned char* hexValues) {
+    // triplet can hold 3 8-bit strings, total 24 bits, divisible by 6 bits
+    // bit shift hex values into triplet, fitting 3 hex values into triplet
+    // a full triplet produces 4 converted values
+    // in total, 22 converted values
+    unsigned long triplet;
+    string converted;
+
+    triplet = (hexValues[13] << 16) | (hexValues[14] << 8) | hexValues[15]; // LSB
+    converted += convert(triplet, 4);
+
+    triplet = (hexValues[10] << 16) | (hexValues[11] << 8) | hexValues[12];
+    converted += convert(triplet, 4);
+
+    triplet = (hexValues[7] << 16) | (hexValues[8] << 8) | hexValues[9];
+    converted += convert(triplet, 4);
+
+    triplet = (hexValues[4] << 16) | (hexValues[5] << 8) | hexValues[6];
+    converted += convert(triplet, 4);
+
+    triplet = (hexValues[1] << 16) | (hexValues[2] << 8) | hexValues[3];
+    converted += convert(triplet, 4);
+
+    triplet = hexValues[0]; // MSB
+    converted += convert(triplet, 2);
+
+    return converted;
+}
+
+string MD5_Crypt(const string &password) {
     string concat = password + magic + salt + sixBytes(password) + password[0] + '\0' + '\0';
     string inter;
     unsigned char* digest = getDigest(md5(concat));
@@ -91,34 +131,27 @@ string MD5_Crypt(string password) {
     // shuffle around final hex values
     unsigned char replacement[] = {
             digest[11], digest[4], digest[10], digest[5], digest[3], digest[9], digest[15], digest[2],
-            digest[8], digest[14], digest[1],digest[7], digest[13], digest[0], digest[6], digest[12], '\0'
-    };
+            digest[8], digest[14], digest[1],digest[7], digest[13], digest[0], digest[6], digest[12]};
 
     // TODO Final/Bit Manip
-    const string crypt64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    string final;
-
-
-    // 1. Grab each 6 bit group starting from the LSB
-    // 2. Convert binary into a decimal number and covert to corresponding crypt64 character
-
-//    for (int j = 31; j >= 0; j++) {
-//
-//    }
+    string final = triplets(replacement);
 
     return final;
 }
 
 string crack() {
-    string generatedString;
+    string generatedPassword;
     for (int i = 0; i < 26; i++)
         for (int j = 0; j < 26; j++)
             for (int k = 0; k < 26; k++)
                 for (int x = 0; x < 26; x++)
                     for (int y = 0; y < 26; y++)
                         for (int z = 0; z < 26; z++) {
-                            generatedString = alphabet[i] + alphabet[j] + alphabet[k] + alphabet[x] + alphabet[y] + alphabet[z];
-                            if (MD5_Crypt(generatedString) == hashedPassword) return generatedString;
+                            generatedPassword = alphabet[i] + alphabet[j] + alphabet[k] + alphabet[x] + alphabet[y] + alphabet[z];
+                            if (MD5_Crypt(generatedPassword) == hashedPassword) {
+                                cout << "congratulations!!!" << endl;
+                                cout << generatedPassword << endl;
+                                return generatedPassword;
+                            }
                         }
-    return "hi";
 }
