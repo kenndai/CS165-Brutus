@@ -8,23 +8,23 @@ using namespace std;
 string convert(unsigned long, const int &);
 string triplets(unsigned char*);
 string MD5_Crypt(const string &);
-string crack();
+void crack();
 
 const string salt = "hfT7jp2q";
 const string magic = "$1$";
 const string hashedPassword = "rhb3sPONC2VlUS2CG4JFe0";
-const string alphabet[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
 const string crypt64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 int main() {
 
-    auto start = chrono::steady_clock::now();
-    for (int i = 0; i < 10000; i++)
-        MD5_Crypt("rhb3sP");
-    auto end = chrono::steady_clock::now();
-    cout << "Elapsed time in seconds: " << chrono::duration_cast<chrono::seconds>(end - start).count() << "sec";
+//    auto start = chrono::steady_clock::now();
+//    for (int i = 0; i < 10000; i++)
+//        MD5_Crypt("rhb3sP");
+//    auto end = chrono::steady_clock::now();
+//    cout << "Elapsed time in seconds: " << chrono::duration_cast<chrono::seconds>(end - start).count() << "sec";
 
-//    if (MD5_Crypt("czormg") == hashedPassword) cout << "congratulations" << endl;
+    char cstring[] = "czormg";
+    if (MD5_Crypt(cstring) == hashedPassword) cout << "congratulations" << endl;
 
     return 0;
 }
@@ -73,11 +73,11 @@ string MD5_Crypt(const string &password) {
     string sixBytes;
     for (int i = 0; i < 6; i++)
         sixBytes.push_back(altSum[i]);
-
     string concat = password + magic + salt + sixBytes + password[0] + '\0' + '\0';
-    string inter;
 
     unsigned char* digest = MD5(concat).digest;
+
+    string inter;
     // move the  16 hex values into inter
     for (int i = 0; i < 16; i++)
         inter.push_back(digest[i]);
@@ -107,20 +107,25 @@ string MD5_Crypt(const string &password) {
     return triplets(replacement);
 }
 
-//string crack() {
-//    string generatedPassword;
-//    for (int i = 0; i < 26; i++)
-//        for (int j = 0; j < 26; j++)
-//            for (int k = 0; k < 26; k++)
-//                for (int x = 0; x < 26; x++)
-//                    for (int y = 0; y < 26; y++)
-//                        for (int z = 0; z < 26; z++) {
-//                            generatedPassword = alphabet[i] + alphabet[j] + alphabet[k] + alphabet[x] + alphabet[y] + alphabet[z];
-//                            if (MD5_Crypt(generatedPassword) == hashedPassword) {
-//                                cout << "congratulations!!!" << endl;
-//                                cout << generatedPassword << endl;
-//                                return generatedPassword;
-//                            }
-//                        }
-//    return "exit";
-//}
+void crack() {
+    char generatedPassword[7] = {'\0'};
+    for (char i = 97; i < 123; i++)
+        for (char j = 97; j < 123; j++)
+            for (char k = 97; k < 123; k++)
+                for (char x = 97; x < 123; x++)
+                    for (char y = 97; y < 123; y++)
+                        for (char z = 97; z < 123; z++) {
+                            generatedPassword[0] = i;
+                            generatedPassword[1] = j;
+                            generatedPassword[2] = k;
+                            generatedPassword[3] = x;
+                            generatedPassword[4] = y;
+                            generatedPassword[5] = z;
+                            cout << generatedPassword << endl;
+                            if (MD5_Crypt(generatedPassword) == hashedPassword) {
+                                cout << "congratulations!!!" << endl;
+                                cout << generatedPassword << endl;
+                            }
+                        }
+}
+
