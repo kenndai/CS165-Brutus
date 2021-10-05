@@ -1,13 +1,10 @@
 #include <iostream>
-#include <sstream>
 #include <string>
 #include "md5.h"
 #include <chrono>
 
 using namespace std;
 
-unsigned char* getDigest(const string &); //takes in string from hexdigest and produces digest, 16 hex values
-string sixBytes(const string &);
 string convert(unsigned long, const int &);
 string triplets(unsigned char*);
 string MD5_Crypt(const string &);
@@ -20,49 +17,16 @@ const string alphabet[] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
 const string crypt64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 int main() {
-//    string password = "czormg";
-//    string resultHash = MD5_Crypt(password);
-//
-//    if (resultHash == hashedPassword)
-//        cout << "CONGRATULATIONS!!!" << endl;
 
-    crack()
+    auto start = chrono::steady_clock::now();
+    for (int i = 0; i < 10000; i++)
+        MD5_Crypt("rhb3sP");
+    auto end = chrono::steady_clock::now();
+    cout << "Elapsed time in seconds: " << chrono::duration_cast<chrono::seconds>(end - start).count() << "sec";
+
+//    if (MD5_Crypt("czormg") == hashedPassword) cout << "congratulations" << endl;
 
     return 0;
-}
-
-unsigned char* getDigest(const string &hexdigest) {
-    string buffer, hef1, hef2;
-
-    for (int i = 0; i < 32; i += 2) {
-        hef1 = hexdigest[i];
-        hef2 = hexdigest[i + 1];
-        buffer += hef1.append(hef2).append(" ");
-    }
-
-    static unsigned char hexes[16];
-
-    istringstream hex_chars_stream(buffer);
-    unsigned int temp;
-    for (int j = 0; j < 16; j++) {
-        hex_chars_stream >> hex >> temp;
-        hexes[j] = temp;
-    }
-    return hexes;
-}
-
-string sixBytes(const string &password) {
-    string passSaltPass = password + salt + password;
-    MD5 md5psp = MD5(passSaltPass);
-    unsigned char* altSum = getDigest(md5(passSaltPass));
-
-    string sixBytes;
-    // push back 6 hex values
-    // possibly losing data through implicit conversion to chars
-    for (int i = 0; i < 6; i++)
-        sixBytes.push_back(altSum[i]);
-
-    return sixBytes;
 }
 
 string convert(unsigned long triplet, const int &iterations) {
@@ -104,9 +68,16 @@ string triplets(unsigned char* hexValues) {
 }
 
 string MD5_Crypt(const string &password) {
-    string concat = password + magic + salt + sixBytes(password) + password[0] + '\0' + '\0';
+    unsigned char* altSum = MD5(password + salt + password).digest;
+
+    string sixBytes;
+    for (int i = 0; i < 6; i++)
+        sixBytes.push_back(altSum[i]);
+
+    string concat = password + magic + salt + sixBytes + password[0] + '\0' + '\0';
     string inter;
-    unsigned char* digest = getDigest(md5(concat));
+
+    unsigned char* digest = MD5(concat).digest;
     // move the  16 hex values into inter
     for (int i = 0; i < 16; i++)
         inter.push_back(digest[i]);
@@ -122,7 +93,7 @@ string MD5_Crypt(const string &password) {
 
         // rehash and push new values into inter
         inter = "";
-        digest = getDigest(md5(nextInter));
+        digest = MD5(nextInter).digest;
         for (int j = 0; j < 16; j++) {
             inter.push_back(digest[j]);
         }
@@ -133,25 +104,23 @@ string MD5_Crypt(const string &password) {
             digest[11], digest[4], digest[10], digest[5], digest[3], digest[9], digest[15], digest[2],
             digest[8], digest[14], digest[1],digest[7], digest[13], digest[0], digest[6], digest[12]};
 
-    // TODO Final/Bit Manip
-    string final = triplets(replacement);
-
-    return final;
+    return triplets(replacement);
 }
 
-string crack() {
-    string generatedPassword;
-    for (int i = 0; i < 26; i++)
-        for (int j = 0; j < 26; j++)
-            for (int k = 0; k < 26; k++)
-                for (int x = 0; x < 26; x++)
-                    for (int y = 0; y < 26; y++)
-                        for (int z = 0; z < 26; z++) {
-                            generatedPassword = alphabet[i] + alphabet[j] + alphabet[k] + alphabet[x] + alphabet[y] + alphabet[z];
-                            if (MD5_Crypt(generatedPassword) == hashedPassword) {
-                                cout << "congratulations!!!" << endl;
-                                cout << generatedPassword << endl;
-                                return generatedPassword;
-                            }
-                        }
-}
+//string crack() {
+//    string generatedPassword;
+//    for (int i = 0; i < 26; i++)
+//        for (int j = 0; j < 26; j++)
+//            for (int k = 0; k < 26; k++)
+//                for (int x = 0; x < 26; x++)
+//                    for (int y = 0; y < 26; y++)
+//                        for (int z = 0; z < 26; z++) {
+//                            generatedPassword = alphabet[i] + alphabet[j] + alphabet[k] + alphabet[x] + alphabet[y] + alphabet[z];
+//                            if (MD5_Crypt(generatedPassword) == hashedPassword) {
+//                                cout << "congratulations!!!" << endl;
+//                                cout << generatedPassword << endl;
+//                                return generatedPassword;
+//                            }
+//                        }
+//    return "exit";
+//}
