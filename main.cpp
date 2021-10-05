@@ -12,19 +12,14 @@ void crack();
 
 const string salt = "hfT7jp2q";
 const string magic = "$1$";
-const string hashedPassword = "rhb3sPONC2VlUS2CG4JFe0";
+const string hashedPassword = "28OhWtxsNfrmJk3yrKeix/";
 const string crypt64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 int main() {
 
-//    auto start = chrono::steady_clock::now();
-//    for (int i = 0; i < 10000; i++)
-//        MD5_Crypt("rhb3sP");
-//    auto end = chrono::steady_clock::now();
-//    cout << "Elapsed time in seconds: " << chrono::duration_cast<chrono::seconds>(end - start).count() << "sec";
-
-    char cstring[] = "czormg";
-    if (MD5_Crypt(cstring) == hashedPassword) cout << "congratulations" << endl;
+//    char cstring[] = "ababab";
+//    cout << MD5_Crypt(cstring) << endl;
+    crack();
 
     return 0;
 }
@@ -121,10 +116,10 @@ void crack() {
                             generatedPassword[3] = x;
                             generatedPassword[4] = y;
                             generatedPassword[5] = z;
-                            cout << generatedPassword << endl;
                             if (MD5_Crypt(generatedPassword) == hashedPassword) {
                                 cout << "congratulations!!!" << endl;
                                 cout << generatedPassword << endl;
+                                exit(0);
                             }
                         }
 }
