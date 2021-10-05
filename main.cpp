@@ -10,20 +10,14 @@ string triplets(unsigned char*);
 string MD5_Crypt(const string &);
 void crack();
 
-const string salt = "hfT7jp2q";
+const string salt = "4fTgjp6q";
 const string magic = "$1$";
-const string hashedPassword = "rhb3sPONC2VlUS2CG4JFe0";
+const string hashedPassword = "CxWQeLPwIdqToYNk5yDoS.";
 const string crypt64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 int main() {
-//    crack();
-
-    auto start = chrono::steady_clock::now();
-    for (int i = 0; i < 10000; i++)
-        MD5_Crypt("rhb3sP");
-    auto end = chrono::steady_clock::now();
-    cout << "Elapsed time in seconds: " << chrono::duration_cast<chrono::seconds>(end - start).count() << "sec";
-
+    cout << "cracking..." << endl;
+    crack();
     return 0;
 }
 
@@ -119,10 +113,9 @@ void crack() {
                             generatedPassword[3] = x;
                             generatedPassword[4] = y;
                             generatedPassword[5] = z;
-                            cout << generatedPassword << endl;
                             if (MD5_Crypt(generatedPassword) == hashedPassword) {
                                 cout << "congratulations!!!" << endl;
-                                cout << generatedPassword << endl;
+                                cout << "This is your password: " << generatedPassword << endl;
                                 exit(0);
                             }
                         }
