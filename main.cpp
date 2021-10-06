@@ -101,6 +101,75 @@ string MD5_Crypt(const string &password) {
 
 void crack() {
     char generatedPassword[7] = {'\0'};
+
+    for (char i = 97; i < 123; i++) {
+        generatedPassword[0] = i;
+        cout << generatedPassword << endl;
+        if (MD5_Crypt(generatedPassword) == hashedPassword) {
+            cout << "congratulations!!!" << endl;
+            cout << "This is your password: " << generatedPassword << endl;
+            exit(0);
+        }
+    }
+
+    for (char i = 97; i < 123; i++)
+        for (char j = 97; j < 123; j++) {
+            generatedPassword[0] = i;
+            generatedPassword[1] = j;
+            cout << generatedPassword << endl;
+            if (MD5_Crypt(generatedPassword) == hashedPassword) {
+                cout << "congratulations!!!" << endl;
+                cout << "This is your password: " << generatedPassword << endl;
+                exit(0);
+            }
+        }
+
+    for (char i = 97; i < 123; i++)
+        for (char j = 97; j < 123; j++)
+            for (char k = 97; k < 123; k++) {
+                generatedPassword[0] = i;
+                generatedPassword[1] = j;
+                generatedPassword[2] = k;
+                cout << generatedPassword << endl;
+                if (MD5_Crypt(generatedPassword) == hashedPassword) {
+                    cout << "congratulations!!!" << endl;
+                    cout << "This is your password: " << generatedPassword << endl;
+                    exit(0);
+                }
+            }
+
+    for (char i = 97; i < 123; i++)
+        for (char j = 97; j < 123; j++)
+            for (char k = 97; k < 123; k++)
+                for (char x = 97; x < 123; x++) {
+                    generatedPassword[0] = i;
+                    generatedPassword[1] = j;
+                    generatedPassword[2] = k;
+                    generatedPassword[3] = x;
+                    if (MD5_Crypt(generatedPassword) == hashedPassword) {
+                        cout << "congratulations!!!" << endl;
+                        cout << "This is your password: " << generatedPassword << endl;
+                        exit(0);
+                    }
+                }
+
+    for (char i = 97; i < 123; i++)
+        for (char j = 97; j < 123; j++)
+            for (char k = 97; k < 123; k++)
+                for (char x = 97; x < 123; x++)
+                    for (char y = 97; y < 123; y++) {
+                        generatedPassword[0] = i;
+                        generatedPassword[1] = j;
+                        generatedPassword[2] = k;
+                        generatedPassword[3] = x;
+                        generatedPassword[4] = y;
+                        if (MD5_Crypt(generatedPassword) == hashedPassword) {
+                            cout << "congratulations!!!" << endl;
+                            cout << "This is your password: " << generatedPassword << endl;
+                            exit(0);
+                        }
+                    }
+
     for (char i = 97; i < 123; i++)
         for (char j = 97; j < 123; j++)
             for (char k = 97; k < 123; k++)
@@ -119,6 +188,8 @@ void crack() {
                                 exit(0);
                             }
                         }
+
+    cout << "No password found!" << endl;
     exit(0);
 }
 
